@@ -1,35 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script>
-        var ventas = '';
+        var datosVentas = '';
 
-        function generador() {
+        function datos() {
 
-            var num = document.getElementById("ea").value;
-            ventas = `USE punto_venta;<br>
-            DELETE FROM ventas;<br>
-            INSERT INTO venta(fecha, hora)VALUES <br>(1,'`
-            + generarFechaAleatoria() + "', '" + generarHoraAleatoria() + "'),";
+            var num = document.getElementById("cantidadInput").value;
+            datosVentas = `USE punto_venta;<br>
+            DELETE FROM venta_detalle;<br>
+            DELETE FROM venta;<br>
+            INSERT INTO venta(idVenta, fecha, hora)VALUES <br>(1,'`
+                + fechaAleatoria() + "', '" + horaAleatoria() + "'),";
 
             for (let index = 2; index <= num; index++) {
-                ventas += "<br>( "+index+" , '" + generarFechaAleatoria() 
-                + "' , '" + generarHoraAleatoria() + "'),";
+                datosVentas += "<br>( " + index + " , '" + fechaAleatoria()
+                    + "' , '" + horaAleatoria() + "'),";
             }
 
-            // Validar y ajustar el último carácter
-            if (ventas.endsWith(',')) {
-                ventas = ventas.slice(0, -1) + ';';
+            if (datosVentas.endsWith(',')) {
+                datosVentas = datosVentas.slice(0, -1) + ';';
             }
 
-            document.getElementById("ola").innerHTML = ventas;
+            datosVentas += `<br>
+                INSERT INTO venta_detalle (IDVenta, IDProducto) VALUES
+            `;
+
+            for (let i = 1; i <= num; i++) {
+
+                var idVenta = Math.floor(Math.random() * 10);
+
+                for (let j = 0; j <= idVenta; j++) {
+
+                    datosVentas += "<br>(" + i + "," + Math.floor(1 + Math.random() * 10) + "),";
+
+                }
+
+            }
+
+            if (datosVentas.endsWith(',')) {
+                datosVentas = datosVentas.slice(0, -1) + ';';
+            }
+
+            document.getElementById("resultado").innerHTML = datosVentas;
         }
 
-        function generarFechaAleatoria() {
+        function fechaAleatoria() {
             var año = Math.floor(Math.random() * (2022 - 2000 + 1)) + 2000;
             var mes = Math.floor(Math.random() * 12) + 1;
             var dia = Math.floor(Math.random() * 31) + 1;
@@ -37,50 +57,43 @@
             var minuto = Math.floor(Math.random() * 60);
             var segundo = Math.floor(Math.random() * 60);
 
-            // Crea el objeto Date con los valores aleatorios
             var fechaAleatoria = new Date(año, mes - 1, dia, hora, minuto, segundo);
 
-            // Formatea la fecha en el formato deseado (Año-Mes-Día)
             var fechaFormateada = fechaAleatoria.toISOString().split('T')[0];
 
             return fechaFormateada;
         }
 
-        function generarHoraAleatoria() {
-            // Generar horas, minutos y segundos aleatorios
-            var horas = Math.floor(Math.random() * 24); // 0 a 23
-            var minutos = Math.floor(Math.random() * 60); // 0 a 59
-            var segundos = Math.floor(Math.random() * 60); // 0 a 59
+        function horaAleatoria() {
+            var horas = Math.floor(Math.random() * 24);
+            var minutos = Math.floor(Math.random() * 60);
+            var segundos = Math.floor(Math.random() * 60);
 
-            // Formatear la hora en formato HH:MM:SS
-            var horaFormateada = padLeft(horas) + ":" + padLeft(minutos) + ":" + padLeft(segundos);
+            var horaFormateada = rellenarCerosIzquierda(horas) + ":" + rellenarCerosIzquierda(minutos) + ":" + rellenarCerosIzquierda(segundos);
 
             return horaFormateada;
         }
 
-        // Función auxiliar para rellenar con ceros a la izquierda
-        function padLeft(numero) {
+        function rellenarCerosIzquierda(numero) {
             return numero < 10 ? "0" + numero : numero;
         }
 
-        function generarSQL(){
-            
-            var archivo = document.createElement('a');
-            var salida = ventas.replace(/<br>/g, '\n').trim();
+        function archivoSQL() {
 
-            archivo.setAttribute('href', 'data:text/plane;charset=utf-8,' 
-            + encodeURIComponent(salida));
+            var archivo = document.createElement('a');
+            var salida = datosVentas.replace(/<br>/g, '\n').trim();
+
+            archivo.setAttribute('href', 'data:text/plane;charset=utf-8,'
+                + encodeURIComponent(salida));
             archivo.setAttribute('download', 'punto_venta.sql');
 
             archivo.style.display = 'none';
 
             document.body.appendChild(archivo);
-            
+
             archivo.click();
-            
+
             document.body.removeChild(archivo);
-
-
 
         }
 
@@ -89,12 +102,12 @@
 </head>
 
 <body>
-    <input type="button" value="generar n ventas" onclick="generador()">
+    <input type="button" value=" Generar Ventas" onclick="datos()">
     <br>
-    <input type="button" value="generar SQL" onclick="generarSQL()">
-    <input type="number" name="numero" id="ea" min = 0>
+    <input type="button" value="Descargar SQL" onclick="archivoSQL()">
+    <input type="number" name="numero" id="cantidadInput" min="0" value="10">
 
-    <p id="ola">
+    <p id="resultado">
     </p>
 </body>
 
