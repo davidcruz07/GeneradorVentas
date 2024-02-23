@@ -1,114 +1,324 @@
 <!DOCTYPE html>
-<html lang="es">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <script>
-        var datosVentas = '';
+      // Funciones de Generación
 
-        function datos() {
+      function generarSQL() {
+        var numeroVentas = document.getElementById("NumRegistros").value;
 
-            var num = document.getElementById("cantidadInput").value;
-            datosVentas = `USE punto_venta;<br>
-            DELETE FROM venta_detalle;<br>
-            DELETE FROM venta;<br>
-            INSERT INTO venta(idVenta, fecha, hora)VALUES <br>(1,'`
-                + fechaAleatoria() + "', '" + horaAleatoria() + "'),";
+        ventas =
+          "USE punto_venta; <br>" +
+          "DELETE FROM venta_detalle;<br>" +
+          "DELETE FROM venta; <br>" +
+          "INSERT INTO venta(id, fecha, hora)VALUES <br>(1," +
+          "'" +
+          generarFechaAleatoria() +
+          "'" +
+          "," +
+          "'" +
+          generarHoraAleatoria() +
+          "')" +
+          ",";
 
-            for (let index = 2; index <= num; index++) {
-                datosVentas += "<br>( " + index + " , '" + fechaAleatoria()
-                    + "' , '" + horaAleatoria() + "'),";
-            }
-
-            if (datosVentas.endsWith(',')) {
-                datosVentas = datosVentas.slice(0, -1) + ';';
-            }
-
-            datosVentas += `<br>
-                INSERT INTO venta_detalle (IDVenta, IDProducto) VALUES
-            `;
-
-            for (let i = 1; i <= num; i++) {
-
-                var idVenta = Math.floor(Math.random() * 10);
-
-                for (let j = 0; j <= idVenta; j++) {
-
-                    datosVentas += "<br>(" + i + "," + Math.floor(1 + Math.random() * 10) + "),";
-
-                }
-
-            }
-
-            if (datosVentas.endsWith(',')) {
-                datosVentas = datosVentas.slice(0, -1) + ';';
-            }
-
-            document.getElementById("resultado").innerHTML = datosVentas;
+        for (let index = 2; index <= numeroVentas; index++) {
+          ventas +=
+            "<br>(" +
+            index +
+            ",'" +
+            generarFechaAleatoria() +
+            "' , '" +
+            generarHoraAleatoria() +
+            "'),";
         }
 
-        function fechaAleatoria() {
-            var año = Math.floor(Math.random() * (2022 - 2000 + 1)) + 2000;
-            var mes = Math.floor(Math.random() * 12) + 1;
-            var dia = Math.floor(Math.random() * 31) + 1;
-            var hora = Math.floor(Math.random() * 24);
-            var minuto = Math.floor(Math.random() * 60);
-            var segundo = Math.floor(Math.random() * 60);
-
-            var fechaAleatoria = new Date(año, mes - 1, dia, hora, minuto, segundo);
-
-            var fechaFormateada = fechaAleatoria.toISOString().split('T')[0];
-
-            return fechaFormateada;
+        if (ventas.endsWith(",")) {
+          ventas = ventas.slice(0, -1) + ";";
         }
 
-        function horaAleatoria() {
-            var horas = Math.floor(Math.random() * 24);
-            var minutos = Math.floor(Math.random() * 60);
-            var segundos = Math.floor(Math.random() * 60);
+        ventas += `
+        
+        <br> INSERT INTO venta_detalle(IDVenta, IDProducto) VALUES <br>
+        `;
 
-            var horaFormateada = rellenarCerosIzquierda(horas) + ":" + rellenarCerosIzquierda(minutos) + ":" + rellenarCerosIzquierda(segundos);
-
-            return horaFormateada;
+        for (let i = 1; i <= numeroVentas; i++) {
+          var idVenta = Math.floor(Math.random() * 10) + 1;
+          for (let j = 0; j < idVenta; j++) {
+            ventas +=
+              "(" + i + "," + (Math.floor(Math.random() * 10) + 1) + "),";
+          }
         }
 
-        function rellenarCerosIzquierda(numero) {
-            return numero < 10 ? "0" + numero : numero;
+        if (ventas.endsWith(",")) {
+          ventas = ventas.slice(0, -1) + ";";
         }
 
-        function archivoSQL() {
+        document.getElementById("resultVentas").innerHTML = ventas;
+      }
 
-            var archivo = document.createElement('a');
-            var salida = datosVentas.replace(/<br>/g, '\n').trim();
+      function generarCSV() {
+        var numeroVentas = document.getElementById("NumRegistros").value;
 
-            archivo.setAttribute('href', 'data:text/plane;charset=utf-8,'
-                + encodeURIComponent(salida));
-            archivo.setAttribute('download', 'punto_venta.sql');
+        ventas1 =
+          "<br>1," +
+          "" +
+          generarFechaAleatoria() +
+          "" +
+          "," +
+          "" +
+          generarHoraAleatoria() +
+          "" +
+          "";
 
-            archivo.style.display = 'none';
-
-            document.body.appendChild(archivo);
-
-            archivo.click();
-
-            document.body.removeChild(archivo);
-
+        for (let index = 2; index <= numeroVentas; index++) {
+          ventas1 +=
+            "<br>" +
+            index +
+            "," +
+            generarFechaAleatoria() +
+            "," +
+            generarHoraAleatoria() +
+            "";
         }
 
+        document.getElementById("resultVentas").innerHTML = ventas1; 
+
+        var ventasDetalleCSV = "";
+
+        for (let i = 1; i <= numeroVentas; i++) {
+          var idVenta = Math.floor(Math.random() * 10) + 1;
+          for (let j = 0; j < idVenta; j++) {
+            ventasDetalleCSV +=
+              "" + i + "," + (Math.floor(Math.random() * 10) + 1) + "<br>";
+          }
+        }
+
+        document.getElementById("resultVentasDetalle").innerHTML = ventasDetalleCSV;
+      }
+
+      function generarJSON() {
+        var numeroVentas = document.getElementById("NumRegistros").value;
+
+        var ventasJSON = `{<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;"venta": [<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id": 
+        `;
+
+        ventasJSON +=
+          "1," +
+          "<br>" +
+          `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"fecha": "` +
+          generarFechaAleatoria() +
+          `",` +
+          "<br>" +
+          `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"hora": "` +
+          generarHoraAleatoria() +
+          `"<br>&nbsp;&nbsp;&nbsp;&nbsp;},` +
+          "";
+
+        for (let index = 2; index <= numeroVentas; index++) {
+          ventasJSON +=
+            "<br>" +
+            `&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id": ` +
+            index +
+            ",<br>" +
+            `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"fecha": "` +
+            generarFechaAleatoria() +
+            `",` +
+            "<br>" +
+            `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"hora": "` +
+            generarHoraAleatoria() +
+            `"<br>&nbsp;&nbsp;&nbsp;&nbsp;},`;
+        }
+
+        //Validar y ajustar el último carácter
+        if (ventasJSON.endsWith(",")) {
+          ventasJSON =
+            ventasJSON.slice(0, -1) +
+            `<br>
+                    ]<br>
+                    },<br>`;
+        }
+
+        //Aqui empieza ventas detalle
+        ventasJSON += `{<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;"venta_detalle": [
+          &nbsp;&nbsp;&nbsp;&nbsp;
+            
+        `;
+        for (let i = 1; i <= numeroVentas; i++) {
+          var idVenta = Math.floor(Math.random() * 10) + 1;
+          for (let j = 0; j < idVenta; j++) {
+            ventasJSON +=
+              `<br>&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"IDVenta": ` +
+              i +
+              ",<br>" +
+              `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"IDProducto": ` +
+              (Math.floor(Math.random() * 10) + 1) +
+              "<br>&nbsp;&nbsp;&nbsp;&nbsp;},";
+          }
+        }
+
+        //Validar y ajustar el último carácter
+        if (ventasJSON.endsWith(",")) {
+          ventasJSON =
+            ventasJSON.slice(0, -1) +
+            `<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;]<br>
+                    }<br>`;
+        }
+
+        document.getElementById("resultVentas").innerHTML = ventasJSON;
+      }
+
+      // Funciones de Generación de Documentos
+
+      function generarDocuSQL() {
+        var archivo = document.createElement("a");
+        var salida = ventas.replace(/<br>/g, "\n").trim();
+        archivo.setAttribute(
+          "href",
+          "data:text/plain;charset=UTF-8," + encodeURIComponent(salida)
+        );
+        archivo.setAttribute("download", "punto_venta.sql");
+        archivo.style.display = "none";
+
+        document.body.appendChild(archivo);
+
+        archivo.click();
+
+        document.body.removeChild(archivo);
+      }
+
+      function generarDocuCSV() {
+        var archivo = document.createElement("a");
+
+        var parrafo = document.querySelector("p");
+
+        var texto1 = parrafo.querySelector("#resultVentas");
+
+        var salida = ventas1.replace(/<br>/g, "\n").trim();
+        archivo.setAttribute(
+          "href",
+          "data:text/plain;charset=UTF-8," + encodeURIComponent(salida)
+        );
+        archivo.setAttribute("download", "ventas.csv");
+        archivo.style.display = "none";
+
+        document.body.appendChild(archivo);
+
+        archivo.click();
+
+        document.body.removeChild(archivo);
+
+        //--
+
+        var archivo2 = document.createElement("a");
+
+        var parrafo2 = document.querySelector("p");
+
+        var texto2 = parrafo2.querySelector("#resultVentasDetalle");
+
+        var salida2 = ventasDetalleCSV.replace(/<br/g, "").trim();
+
+        archivo2.setAttribute(
+          "href",
+          "data:text/plain;charset=UTF-8," + encodeURIComponent(salida2)
+        );
+        archivo2.setAttribute("download", "ventas_detalles.csv");
+        archivo2.style.display = "none";
+
+        document.body.appendChild(archivo2);
+
+        archivo2.click();
+
+        document.body.removeChild(archivo2);
+      }
+
+      function generarDocuJSON() {
+        var archivo = document.createElement("a");
+        var salida = ventasJSON
+          .replace(/<br>/g, "\n")
+          .replace(/nbsp/g, "\t")
+          .replace(/&/g, "")
+          .replace(/;/g, "");
+        archivo.setAttribute(
+          "href",
+          "data:text/plain;charset=UTF-8," + encodeURIComponent(salida)
+        );
+        archivo.setAttribute("download", "ventas-ventas_detalle-Json.sql");
+        archivo.style.display = "none";
+
+        document.body.appendChild(archivo);
+
+        archivo.click();
+
+        document.body.removeChild(archivo);
+      }
+
+      // Funciones de Generación de Fecha y Hora
+
+      function generarFechaAleatoria() {
+        var año = Math.floor(Math.random() * (2022 - 2000 + 1)) + 2000;
+        var mes = Math.floor(Math.random() * 12) + 1;
+        var dia = Math.floor(Math.random() * 31) + 1;
+        var hora = Math.floor(Math.random() * 24);
+        var minuto = Math.floor(Math.random() * 60);
+        var segundo = Math.floor(Math.random() * 60);
+
+        // Crea el objeto Date con los valores aleatorios
+        var fechaAleatoria = new Date(año, mes - 1, dia, hora, minuto, segundo);
+
+        // Formatea la fecha en el formato deseado (Año-Mes-Día)
+        var fechaFormateada = fechaAleatoria.toISOString().split("T")[0];
+
+        return fechaFormateada;
+      }
+
+      function generarHoraAleatoria() {
+        // Generar horas, minutos y segundos aleatorios
+        var horas = Math.floor(Math.random() * 24); // 0 a 23
+        var minutos = Math.floor(Math.random() * 60); // 0 a 59
+        var segundos = Math.floor(Math.random() * 60); // 0 a 59
+
+        // Formatear la hora en formato HH:MM:SS
+        var horaFormateada =
+          padLeft(horas) + ":" + padLeft(minutos) + ":" + padLeft(segundos);
+
+        return horaFormateada;
+      }
+
+      // Función auxiliar para rellenar con ceros a la izquierda
+      function padLeft(numero) {
+        return numero < 10 ? "0" + numero : numero;
+      }
     </script>
+  </head>
 
-</head>
-
-<body>
-    <input type="button" value=" Generar Ventas" onclick="datos()">
+  <body>
+    Número de ventas a generar:
+    <input type="number" id="NumRegistros" required/>
     <br>
-    <input type="button" value="Descargar SQL" onclick="archivoSQL()">
-    <input type="number" name="numero" id="cantidadInput" min="0" value="10">
+    <input type="button" value="Generar Ventas en SQL" onclick="generarSQL()" />
+    <br>
+    <input type="button" value="Generar Ventas en CSV" onclick="generarCSV()" />
+    <br>
+    <input type="button" value="Generar Ventas en JSON" onclick="generarJSON()"/>
+    <br>
+    <input type="button" value="Descargar archivo SQL" onclick="generarDocuSQL()" />
+    <br>
+    <input type="button" value="Descargar archivos CSV" onclick="generarDocuCSV()" />
+    <br>
+    <input type="button" value="Descargar archivo JSON" onclick="generarDocuJSON()" />
 
-    <p id="resultado">
-    </p>
-</body>
+    <p id="resultVentas"></p>
 
+    <p id="resultVentasDetalle"></p>
+  </body>
 </html>
